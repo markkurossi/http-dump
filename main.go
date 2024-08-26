@@ -79,16 +79,20 @@ func do(method, u, basename string, headers map[string]string) error {
 	if err != nil {
 		return err
 	}
+	suffix := "txt"
 	ct := resp.Header.Get("Content-Type")
 	if strings.HasSuffix(ct, "/xml") {
+		suffix = "xml"
 		body, err = mxj.BeautifyXml(body, "", "  ")
 		if err != nil {
 			return err
 		}
+	} else if strings.HasSuffix(ct, "/html") {
+		suffix = "html"
 	}
 
 	resp.Body.Close()
-	err = os.WriteFile(fmt.Sprintf("%s-body.txt", basename), body, 0666)
+	err = os.WriteFile(fmt.Sprintf("%s-body.%s", basename, suffix), body, 0666)
 	if err != nil {
 		return err
 	}
